@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace BeautyStore.Models
 {
@@ -11,6 +12,7 @@ namespace BeautyStore.Models
 
         public string? Descripcion { get; set; }
 
+        [JsonIgnore]
         public ICollection<Producto>? Productos { get; set; }
     }
 }

@@ -4,6 +4,7 @@ using BeautyStore.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BeautyStore.Migrations
 {
     [DbContext(typeof(BeautyStoreContext))]
-    partial class BeautyStoreContextModelSnapshot : ModelSnapshot
+    [Migration("20260617041032_AddPedidos")]
+    partial class AddPedidos
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -40,41 +43,6 @@ namespace BeautyStore.Migrations
                     b.HasKey("IdCategoria");
 
                     b.ToTable("Categorias");
-                });
-
-            modelBuilder.Entity("BeautyStore.Models.DetallePedido", b =>
-                {
-                    b.Property<int>("IdDetalle")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdDetalle"));
-
-                    b.Property<int>("Cantidad")
-                        .HasColumnType("int");
-
-                    b.Property<int>("IdPedido")
-                        .HasColumnType("int");
-
-                    b.Property<int>("IdProducto")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("PedidoIdPedido")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("PrecioUnitario")
-                        .HasColumnType("decimal(10,2)");
-
-                    b.Property<int?>("ProductoIdProducto")
-                        .HasColumnType("int");
-
-                    b.HasKey("IdDetalle");
-
-                    b.HasIndex("PedidoIdPedido");
-
-                    b.HasIndex("ProductoIdProducto");
-
-                    b.ToTable("DetallesPedido");
                 });
 
             modelBuilder.Entity("BeautyStore.Models.Pedido", b =>
@@ -174,21 +142,6 @@ namespace BeautyStore.Migrations
                     b.ToTable("Usuarios");
                 });
 
-            modelBuilder.Entity("BeautyStore.Models.DetallePedido", b =>
-                {
-                    b.HasOne("BeautyStore.Models.Pedido", "Pedido")
-                        .WithMany("Detalles")
-                        .HasForeignKey("PedidoIdPedido");
-
-                    b.HasOne("BeautyStore.Models.Producto", "Producto")
-                        .WithMany("Detalles")
-                        .HasForeignKey("ProductoIdProducto");
-
-                    b.Navigation("Pedido");
-
-                    b.Navigation("Producto");
-                });
-
             modelBuilder.Entity("BeautyStore.Models.Pedido", b =>
                 {
                     b.HasOne("BeautyStore.Models.Usuario", "Usuario")
@@ -210,16 +163,6 @@ namespace BeautyStore.Migrations
             modelBuilder.Entity("BeautyStore.Models.Categoria", b =>
                 {
                     b.Navigation("Productos");
-                });
-
-            modelBuilder.Entity("BeautyStore.Models.Pedido", b =>
-                {
-                    b.Navigation("Detalles");
-                });
-
-            modelBuilder.Entity("BeautyStore.Models.Producto", b =>
-                {
-                    b.Navigation("Detalles");
                 });
 
             modelBuilder.Entity("BeautyStore.Models.Usuario", b =>

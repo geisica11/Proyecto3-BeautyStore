@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace BeautyStore.Models
 {
@@ -19,6 +20,11 @@ namespace BeautyStore.Models
 
         public int IdCategoria { get; set; }
 
+        [JsonIgnore]
         public Categoria? Categoria { get; set; }
+
+        [JsonIgnore]
+        public ICollection<DetallePedido> Detalles { get; set; }
+    = new List<DetallePedido>();
     }
 }
