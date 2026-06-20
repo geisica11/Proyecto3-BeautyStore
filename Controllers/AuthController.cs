@@ -43,7 +43,36 @@ namespace BeautyStore.Controllers
             var token = _tokenService
                 .GenerateToken(usuario, _config);
 
-            return Ok(new { token });
+            return Ok(new { 
+                token = token, 
+                rol = usuario.Rol 
+            });
+        }
+
+        [AllowAnonymous]
+        [HttpPost("registro")]
+        public IActionResult Registro([FromBody] Usuario usuario)
+        {
+            if (string.IsNullOrWhiteSpace(usuario.Correo) ||
+                string.IsNullOrWhiteSpace(usuario.Password) ||
+                string.IsNullOrWhiteSpace(usuario.Nombre))
+            {
+                return BadRequest("Nombre, correo y contraseña son obligatorios.");
+            }
+
+            var existeCorreo = _context.Usuarios
+                .Any(u => u.Correo == usuario.Correo);
+
+            if (existeCorreo)
+            {
+                return Conflict("El correo ya está registrado.");
+            }
+
+            usuario.Rol = "Usuario";
+            _context.Usuarios.Add(usuario);
+            _context.SaveChanges();
+
+            return Ok(new { mensaje = "Cuenta creada correctamente." });
         }
 
         [Authorize]

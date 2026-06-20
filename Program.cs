@@ -4,13 +4,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Base de datos
 builder.Services.AddDbContext<BeautyStoreContext>(options =>
-    options.UseSqlServer(
-        builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Servicio JWT
 builder.Services.AddScoped<TokenService>();
@@ -35,7 +35,8 @@ builder.Services.AddAuthentication("Bearer")
                 IssuerSigningKey =
                     new SymmetricSecurityKey(
                         Encoding.UTF8.GetBytes(
-                            jwtConfig["Key"]!))
+                            jwtConfig["Key"]!)),
+                RoleClaimType = ClaimTypes.Role 
             };
     });
 
@@ -62,6 +63,33 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+// Apply migrations automatically
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<BeautyStoreContext>();
+    db.Database.Migrate();
+    // Seed inicial: categorías y productos de ejemplo
+    if (!db.Categorias.Any() && !db.Productos.Any())
+    {
+        var catMaquillaje = new BeautyStore.Models.Categoria { Nombre = "Maquillaje", Descripcion = "Cosméticos para maquillaje" };
+        var catFacial = new BeautyStore.Models.Categoria { Nombre = "Cuidado Facial", Descripcion = "Productos para la piel" };
+        var catCabello = new BeautyStore.Models.Categoria { Nombre = "Cabello", Descripcion = "Cuidado y styling" };
+
+        db.Categorias.AddRange(catMaquillaje, catFacial, catCabello);
+        db.SaveChanges();
+
+        var productos = new[] {
+            new BeautyStore.Models.Producto { Nombre = "Labial Mate Terciopelo", Descripcion = "Larga duración", Precio = 4900m, Stock = 25, Imagen = null, IdCategoria = catMaquillaje.IdCategoria },
+            new BeautyStore.Models.Producto { Nombre = "Protector Solar SPF 50", Descripcion = "Textura ligera", Precio = 8500m, Stock = 40, Imagen = null, IdCategoria = catFacial.IdCategoria },
+            new BeautyStore.Models.Producto { Nombre = "Base Líquida Natural", Descripcion = "Cobertura media", Precio = 12000m, Stock = 18, Imagen = null, IdCategoria = catMaquillaje.IdCategoria },
+            new BeautyStore.Models.Producto { Nombre = "Shampoo Hidratante", Descripcion = "Cabello sedoso", Precio = 7200m, Stock = 30, Imagen = null, IdCategoria = catCabello.IdCategoria }
+        };
+
+        db.Productos.AddRange(productos);
+        db.SaveChanges();
+    }
+}
+
 // Swagger
 if (app.Environment.IsDevelopment())
 {
@@ -69,7 +97,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection();
 
 app.UseCors("ReactPolicy");
 
