@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Security.Claims;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,7 +45,11 @@ builder.Services.AddAuthentication("Bearer")
 builder.Services.AddAuthorization();
 
 // Controladores
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+    options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+});
 
 // CORS
 builder.Services.AddCors(options =>

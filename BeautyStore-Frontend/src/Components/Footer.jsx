@@ -20,7 +20,6 @@ export default function Footer() {
             <div className="text-white font-medium tracking-widest text-xs uppercase mb-3">Tienda</div>
             <div className="flex flex-col gap-2">
               <Link to="/catalogo" className="text-white/60 hover:text-[#C9758A] transition-colors no-underline">Catálogo</Link>
-              <Link to="/categorias" className="text-white/60 hover:text-[#C9758A] transition-colors no-underline">Categorías</Link>
             </div>
           </div>
           <div>

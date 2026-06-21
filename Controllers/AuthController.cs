@@ -26,26 +26,22 @@ namespace BeautyStore.Controllers
 
         [AllowAnonymous]
         [HttpPost("login")]
-        public IActionResult Login(
-            [FromBody] LoginDTO login)
+        public IActionResult Login([FromBody] LoginDTO login)
         {
             var usuario = _context.Usuarios
-                .FirstOrDefault(u =>
-                    u.Correo == login.Correo &&
-                    u.Password == login.Password);
+                .FirstOrDefault(u => u.Correo == login.Correo && u.Password == login.Password);
 
             if (usuario == null)
             {
-                return Unauthorized(
-                    "Credenciales inválidas");
+                return Unauthorized(new { mensaje = "Credenciales inválidas" });
             }
 
-            var token = _tokenService
-                .GenerateToken(usuario, _config);
+            var token = _tokenService.GenerateToken(usuario, _config);
 
-            return Ok(new { 
-                token = token, 
-                rol = usuario.Rol 
+            return Ok(new
+            {
+                token = token,
+                rol = usuario.Rol
             });
         }
 
@@ -57,41 +53,14 @@ namespace BeautyStore.Controllers
                 string.IsNullOrWhiteSpace(usuario.Password) ||
                 string.IsNullOrWhiteSpace(usuario.Nombre))
             {
-                return BadRequest("Nombre, correo y contraseña son obligatorios.");
+                return BadRequest(new { mensaje = "Nombre, correo y contraseña son obligatorios." });
             }
 
-            var existeCorreo = _context.Usuarios
-                .Any(u => u.Correo == usuario.Correo);
+            var existeCorreo = _context.Usuarios.Any(u => u.Correo == usuario.Correo);
 
             if (existeCorreo)
             {
-                return Conflict("El correo ya está registrado.");
-            }
-
-            usuario.Rol = "Usuario";
-            _context.Usuarios.Add(usuario);
-            _context.SaveChanges();
-
-            return Ok(new { mensaje = "Cuenta creada correctamente." });
-        }
-
-        [AllowAnonymous]
-        [HttpPost("registro")]
-        public IActionResult Registro([FromBody] Usuario usuario)
-        {
-            if (string.IsNullOrWhiteSpace(usuario.Correo) ||
-                string.IsNullOrWhiteSpace(usuario.Password) ||
-                string.IsNullOrWhiteSpace(usuario.Nombre))
-            {
-                return BadRequest("Nombre, correo y contraseña son obligatorios.");
-            }
-
-            var existeCorreo = _context.Usuarios
-                .Any(u => u.Correo == usuario.Correo);
-
-            if (existeCorreo)
-            {
-                return Conflict("El correo ya está registrado.");
+                return Conflict(new { mensaje = "El correo ya está registrado." });
             }
 
             usuario.Rol = "Usuario";
@@ -105,16 +74,14 @@ namespace BeautyStore.Controllers
         [HttpGet("datos-seguros")]
         public IActionResult GetDatos()
         {
-            return Ok(
-                "Este endpoint está protegido con JWT");
+            return Ok(new { mensaje = "Este endpoint está protegido con JWT" });
         }
 
         [AllowAnonymous]
         [HttpGet("publico")]
         public IActionResult GetPublico()
         {
-            return Ok(
-                "Este endpoint es público");
+            return Ok(new { mensaje = "Este endpoint es público" });
         }
     }
 }

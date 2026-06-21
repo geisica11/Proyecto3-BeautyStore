@@ -21,7 +21,6 @@ export default function App() {
     return (
         <BrowserRouter>
             <Routes>
-                {/* ── Rutas públicas ── */}
                 <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/registro" element={<Registro />} />
@@ -39,7 +38,7 @@ export default function App() {
                 <Route
                     path="/admin"
                     element={
-                        <RutaProtegida rolRequerido="Administrador">
+                        <RutaProtegida rolRequerido="Admin">
                             <AdminPanel />
                         </RutaProtegida>
                     }

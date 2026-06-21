@@ -29,7 +29,7 @@ export default function Login() {
             localStorage.setItem('token', data.token);
             localStorage.setItem('rol', data.rol);
 
-            if (data.rol === 'Administrador') {
+            if (data.rol === 'Admin') {
                 navigate('/admin');
             } else {
                 navigate('/catalogo');
